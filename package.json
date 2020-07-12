@@ -1,0 +1,44 @@
+{
+  "name": "the-narrative",
+  "type": "module",
+  "version": "1.0.0",
+  "repository": "git@github.com:Continuities/the-narrative.git",
+  "author": "Michael Townsend <michael@doublespeakgames.com>",
+  "license": "MPL2.0",
+  "private": true,
+  "scripts": {
+    "start": "webpack-dev-server --config webpack.config.cjs --mode development --devtool inline-source-map --hot $EXTRA_WEBPACK_DEV_SERVER_ARGS",
+    "build": "webpack --config webpack.config.cjs --mode=production"
+  },
+  "browserslist": "> 5%, not dead",
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-flow": "^7.10.4",
+    "@babel/preset-react": "^7.10.4",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-imports": "^2.0.0",
+    "css-loader": "^3.6.0",
+    "eslint": "^7.4.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-react": "^7.20.3",
+    "flow-bin": "^0.129.0",
+    "flow-webpack-plugin": "^1.2.0",
+    "html-webpack-plugin": "^4.3.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "firebase": "^7.16.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-firebaseui": "^4.1.0"
+  }
+}
