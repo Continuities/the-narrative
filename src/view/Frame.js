@@ -10,10 +10,19 @@ import AuthorMenu from './AuthorMenu';
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles({
+  frame: {
+    height: '100%'
+  },
   author: {
     position: 'absolute',
     top: '20px',
     right: '20px'
+  },
+  main: {
+    height: '100%',
+    padding: '20px 40px',
+    margin: '0 auto',
+    maxWidth: '768px'
   }
 });
 
@@ -25,11 +34,11 @@ export default ({ children }: Props) => {
   const styles = useStyles();
 
   return (
-    <div>
+    <div className={styles.frame}>
       <nav className={styles.author}>
         <AuthorMenu />
       </nav>
-      <main>
+      <main className={styles.main}>
         {children}
       </main>
     </div>

@@ -7,7 +7,7 @@
 
 import Firebase from 'firebase/app';
 import 'firebase/auth';
-// import 'firebase/database';
+import 'firebase/firestore';
 import Config from '../config';
 import { asEmitter } from '../util/emitter';
 
@@ -30,42 +30,24 @@ const firebaseConfig = {
 };
 
 const firebase = Firebase.initializeApp(firebaseConfig);
+const db = Firebase.firestore();
 
-// export const device = (oemId:string, instanceId:string) => firebase.database().ref(`devices/oems/${oemId}/iot/${instanceId}`);
-// export const devices = (oemId:string) => firebase.database().ref(`devices/oems/${oemId}/iot/`);
-// export const oems = (oemId?:string) => {
-//   if (oemId) {
-//     return firebase.database().ref(`oem/${oemId}`);
-//   }
-//   return firebase.database().ref('oem');
-// };
-// export const userInfo = (uid:string) => firebase.database().ref(`users/${uid}`);
-// export const products = (oemId:string, productId?:string, modelId?:string, versionId?:string) => {
-//   const path = [ 'products', oemId, productId, modelId, versionId ]
-//     .filter(Boolean)
-//     .join('/');
-//   return firebase.database().ref(path);
-// };
-// export const demo = (demoId:string) => firebase.database().ref(`demo/${demoId}`);
-// export const controller = (oemId:string, controllerId:string) => firebase.database().ref(`devices/oems/${oemId}/ctrl/${controllerId}`);
+export const activePages = () => db.collection('active-pages');
 
 export const signInOptions = [
   Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
   Firebase.auth.EmailAuthProvider.PROVIDER_ID,
 ];
 
-export const firebaseMultiEmitter = (refs:Array<$npm$firebase$database$Reference>):() => Emitter<Array<?$npm$firebase$database$Value>> => {
+export const firebaseMultiEmitter = (refs:Array<$npm$firebase$firestore$CollectionReference>):() => Emitter<Array<?$npm$firebase$firestore$QuerySnapshot>> => {
   const firebase = emit => {
     let currentValues = new Array(refs.length);
-    const destroy = refs.map((ref, index) => {
-      const onValue = snapshot => {
-        const val = snapshot.val();
-        currentValues[index] = val;
+    const destroy = refs.map((ref, index) =>
+      ref.onSnapshot(snapshot => {
+        currentValues[index] = snapshot;
         emit(currentValues);
-      };
-      ref.on('value', onValue);
-      return () => { ref.off('value', onValue); };
-    });
+      })
+    );
     return () => {
       currentValues.length = 0;
       destroy.forEach(d => d());
@@ -74,17 +56,8 @@ export const firebaseMultiEmitter = (refs:Array<$npm$firebase$database$Reference
   return asEmitter(firebase);
 }
 
-export const firebaseEmitter =  (ref:$npm$firebase$database$Reference):() => Emitter<$npm$firebase$database$Value> => {
-  const firebase = emit => {
-    const onValue = snapshot => {
-      emit(snapshot.val());
-    };
-    ref.on('value', onValue);
-    return () => {
-      ref.off('value', onValue);
-    }
-  };
-  return asEmitter(firebase);
+export const firebaseEmitter =  (ref:$npm$firebase$firestore$CollectionReference):() => Emitter<$npm$firebase$firestore$QuerySnapshot> => {
+  return asEmitter(emit => ref.onSnapshot(emit));
 };
 
 export const firebaseAuth = () => firebase.auth();

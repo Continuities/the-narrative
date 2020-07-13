@@ -7,9 +7,10 @@
 
 import React from 'react';
 import Frame from './Frame';
+import Narrative from './Narrative';
 
 export default () => (
   <Frame>
-    <div>This is The Narrative</div>
+    <Narrative />
   </Frame>
 );
