@@ -6,14 +6,12 @@
  */
 
 import React, { useState } from 'react';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { makeStyles } from '@material-ui/core/styles';
 import { 
   authEmitter, 
-  signInOptions, 
-  firebaseAuth,
   logout
 } from '../service/firebase';
+import Login from './Login';
 import { useEmitter } from '../util/emitter';
 import Modal from './Modal';
 import { AccountCircle } from '@material-ui/icons';
@@ -37,13 +35,9 @@ const useStyles = makeStyles({
   }
 });
 
-const getDisplay = auth => {
-
+const AuthorIcon = ({ auth }: { auth: $npm$firebase$auth$User }) => {
   const styles = useStyles();
 
-  if (!auth) {
-    return null;
-  }
   if (auth.photoURL) {
     return <img className={styles.icon} src={auth.photoURL} />;
   }
@@ -57,19 +51,7 @@ export default () => {
   const [ showMenu, setShowMenu ] = useState(false);
   const styles = useStyles();
 
-  const authUiConfig = {
-    signInFlow: 'popup',
-    signInOptions,
-    callbacks: {
-      // Avoid redirects after sign-in.
-      signInSuccessWithAuthResult: () => {
-        setShowMenu(false);
-        return false;
-      }
-    }
-  };
-
-  const display = getDisplay(auth);
+  const close = () => setShowMenu(false);
 
   return (
     <div 
@@ -77,15 +59,15 @@ export default () => {
       className={styles.button}
     >
       { showMenu && (
-        <Modal close={() => setShowMenu(false)}>
+        <Modal close={close}>
           { auth 
-            ? <div onClick={logout}>LOGOUT</div> 
-            : <StyledFirebaseAuth uiConfig={authUiConfig} firebaseAuth={firebaseAuth()}/>
+            ? <div onClick={() => { logout().then(close); }}>LOGOUT</div> 
+            : <Login onSignin={close} />
           }
         </Modal>
       )}
       { auth 
-        ? display
+        ? <AuthorIcon auth={auth} />
         : <AccountCircle className={styles.icon}/>
       }
     </div>

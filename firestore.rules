@@ -1,9 +1,24 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /active-pages/{document=**} {
-      allow read;
-      allow write: if false;
+    match /narrative/{narrative} {
+    	allow read;
+    	match /pages/{page} {
+      	allow read;
+      	allow create: 
+        	if request.auth != null 
+        		&& request.auth.uid == request.resource.data.authorUid
+            && request.resource.data.text != null
+            && request.resource.data.isCanon == false
+            && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
+        allow update: 
+        	if request.auth != null 
+          	&& request.auth.uid == resource.data.authorUid 
+            && resource.data.isCanon == false 
+            && request.resource.data.isCanon == false
+            && request.resource.data.text != null
+            && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
+      }
     }
   }
 }

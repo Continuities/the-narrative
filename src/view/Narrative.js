@@ -7,15 +7,22 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useActivePages } from '../model/page';
+import { usePages } from '../model/page';
+import PageEditor from './PageEditor';
 
 import type { Page } from '../model/page';
+import type { Narrative } from '../model/narrative';
 
 const useStyles = makeStyles({
   page: {
     fontSize: '24px',
     lineHeight: '1.5',
     margin: '20px 0'
+  },
+  container: {
+    margin: '20px 0',
+    display: 'flex',
+    justifyContent: 'center'
   }
 });
 
@@ -28,9 +35,33 @@ const PageView = ({ page }: { page: Page }) => {
   );
 };
 
-export default () => {
+// No idea why ESLint is freaking out here
+// eslint-disable-next-line react/prop-types
+const Prompt = ({ narrative }: { narrative: Narrative }) => {
   const styles = useStyles();
-  const pages:Array<Page> = useActivePages() || [];
+  // eslint-disable-next-line react/prop-types
+  switch (narrative.status) {
+  case 'DRAFT': 
+    return (
+      <div className={styles.container}>
+        {/* eslint-disable-next-line react/prop-types */}
+        <PageEditor narrativeId={narrative.id} pageNumber={narrative.canonLength + 1} />
+      </div>
+    );
+  case 'VOTE': 
+    return 'TODO: Voting';
+  }
+  
+  return null;
+};
+
+type Props = {|
+  narrative: Narrative
+|};
+
+export default ({ narrative }: Props) => {
+  const styles = useStyles();
+  const pages:Array<Page> = usePages(narrative.id) || [];
   if (!pages.length) {
     return (
       <div className={styles.page}>
@@ -38,9 +69,11 @@ export default () => {
       </div>
     );
   }
+
   return (
     <React.Fragment>
       { pages.map(page => <PageView page={page} key={page.number} />) }
+      <Prompt narrative={narrative} />
     </React.Fragment>
   );
 };

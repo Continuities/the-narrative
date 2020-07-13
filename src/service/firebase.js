@@ -32,14 +32,45 @@ const firebaseConfig = {
 const firebase = Firebase.initializeApp(firebaseConfig);
 const db = Firebase.firestore();
 
-export const activePages = () => db.collection('active-pages');
+export const activeNarrative = () => db
+  .collection('narrative')
+  //$FlowFixMe: This is in Firebase 7
+  .where('status', 'in', [ 'DRAFT', 'VOTE' ])
+  .limit(1);
+export const canonPages = (narrativeId:string) => db
+  .collection(`narrative/${narrativeId}/pages`)
+  .where('isCanon', '==', true)
+  .orderBy('number', 'asc');
+export const draftPage = (authorUid:string, narrativeId:string, pageNumber:number) => db
+  .collection(`narrative/${narrativeId}/pages`)
+  .where('authorUid', '==', authorUid)
+  .where('number', '==', pageNumber)
+  .where('isCanon', '==', false)
+  .limit(1);
+
+// TODO: This should probably be in model/page.js
+export const upsertDraft = (pageId:?string, authorUid:string, narrativeId:string, pageNumber:number, text:string) => {
+  const page = {
+    authorUid,
+    isCanon: false,
+    number: pageNumber,
+    text
+  };
+  const col = db.collection(`narrative/${narrativeId}/pages`);
+  if (!pageId) {
+    col.add(page);
+  }
+  else {
+    col.doc(pageId).set(page);
+  }
+};
 
 export const signInOptions = [
   Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
   Firebase.auth.EmailAuthProvider.PROVIDER_ID,
 ];
 
-export const firebaseMultiEmitter = (refs:Array<$npm$firebase$firestore$CollectionReference>):() => Emitter<Array<?$npm$firebase$firestore$QuerySnapshot>> => {
+export const dbMultiEmitter = (refs:Array<$npm$firebase$firestore$Query>):() => Emitter<Array<?$npm$firebase$firestore$QuerySnapshot>> => {
   const firebase = emit => {
     let currentValues = new Array(refs.length);
     const destroy = refs.map((ref, index) =>
@@ -56,7 +87,7 @@ export const firebaseMultiEmitter = (refs:Array<$npm$firebase$firestore$Collecti
   return asEmitter(firebase);
 }
 
-export const firebaseEmitter =  (ref:$npm$firebase$firestore$CollectionReference):() => Emitter<$npm$firebase$firestore$QuerySnapshot> => {
+export const dbEmitter =  (ref:$npm$firebase$firestore$Query):() => Emitter<$npm$firebase$firestore$QuerySnapshot> => {
   return asEmitter(emit => ref.onSnapshot(emit));
 };
 

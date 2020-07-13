@@ -19,10 +19,13 @@ const useStyles = makeStyles({
     top: 0,
     left: 0,
     bottom: 0,
-    right: 0
+    right: 0,
+    background: 'rgba(255, 255, 255, 0.5)'
   },
   modal: {
-    border: '1px solid #ccc'
+    border: '1px solid #ccc',
+    padding: '20px',
+    background: 'white'
   }
 });
 
@@ -43,7 +46,7 @@ export default ({ children, close }: Props) => {
       className={styles.container}
     >
       <div 
-        onClick={doClose}
+        onClick={e => e.stopPropagation()}
         className={styles.modal}
       >
         {children}
