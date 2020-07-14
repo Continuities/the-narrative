@@ -5,7 +5,7 @@
  * @flow
  */
 
-import { activeNarrative, dbEmitter } from '../service/firebase';
+import { activeNarrative, queryEmitter } from '../service/firebase';
 import { map, useEmitter } from '../util/emitter';
 
 export type Narrative = {|
@@ -16,14 +16,17 @@ export type Narrative = {|
 
 export type NarrativeStatus = 'DRAFT' | 'VOTE' | 'COMPLETE';
 
-export const useActiveNarrative = () => {
-  const emitter = map(dbEmitter(activeNarrative()), snapshot => {
+export const activeNarrativeEmitter = () => {
+  return map<$npm$firebase$firestore$QuerySnapshot, Narrative>(queryEmitter(activeNarrative()), snapshot => {
     const data = snapshot.docs[0].data();
-    return ({
+    return {
       id: snapshot.docs[0].id,
       canonLength: data.canonLength,
       status: data.status
-    }:Narrative);
+    };
   });
-  return useEmitter(emitter);
+};
+
+export const useActiveNarrative = () => {
+  return useEmitter(activeNarrativeEmitter());
 };

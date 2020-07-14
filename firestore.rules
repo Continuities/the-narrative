@@ -1,6 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+  	function isModerator() {
+    	return request.auth != null && exists(/databases/$(database)/documents/moderators/$(request.auth.uid));
+    }
+  	match /moderators/{moderator} {
+    	allow read;
+    }
     match /narrative/{narrative} {
     	allow read;
     	match /pages/{page} {
@@ -10,13 +16,15 @@ service cloud.firestore {
         		&& request.auth.uid == request.resource.data.authorUid
             && request.resource.data.text != null
             && request.resource.data.isCanon == false
+            && request.resource.data.moderation == 'PENDING'
             && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
         allow update: 
         	if request.auth != null 
-          	&& request.auth.uid == resource.data.authorUid 
+          	&& (request.auth.uid == resource.data.authorUid || isModerator())
             && resource.data.isCanon == false 
             && request.resource.data.isCanon == false
             && request.resource.data.text != null
+            && (request.resource.data.moderation == 'PENDING' || isModerator())
             && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
       }
     }

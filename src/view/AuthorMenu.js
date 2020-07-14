@@ -7,13 +7,12 @@
 
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { 
-  authEmitter, 
-  logout
-} from '../service/firebase';
+import { logout } from '../service/firebase';
+import { useIsModerator } from '../model/user';
 import Login from './Login';
-import { useEmitter } from '../util/emitter';
 import Modal from './Modal';
+import Menu from './Menu';
+import PageModeration from './PageModeration';
 import { AccountCircle } from '@material-ui/icons';
 
 const useStyles = makeStyles({
@@ -47,23 +46,38 @@ const AuthorIcon = ({ auth }: { auth: $npm$firebase$auth$User }) => {
 };
 
 export default () => {
-  const auth = useEmitter(authEmitter());
-  const [ showMenu, setShowMenu ] = useState(false);
+  const authData = useIsModerator();
+  const [ showing, setShowing ] = useState(null);
   const styles = useStyles();
 
-  const close = () => setShowMenu(false);
+  const auth = authData && authData.left;
+  const isMod = authData && authData.right;
+
+  const close = () => setShowing(null);
+
+  const menu = (
+    <Menu>
+      { isMod && <div key='mod' onClick={() => setShowing('mod')}>Moderate</div> }
+      <div key='logout' onClick={() => { logout().then(close); }}>Logout</div>
+    </Menu>
+  );
 
   return (
     <div 
-      onClick={() => setShowMenu(true)}
+      onClick={() => setShowing('menu')}
       className={styles.button}
     >
-      { showMenu && (
+      { (showing == 'menu') && (
         <Modal close={close}>
           { auth 
-            ? <div onClick={() => { logout().then(close); }}>LOGOUT</div> 
+            ? menu
             : <Login onSignin={close} />
           }
+        </Modal>
+      )}
+      { (showing == 'mod') && (
+        <Modal close={close}>
+          <PageModeration close={close}/>
         </Modal>
       )}
       { auth 

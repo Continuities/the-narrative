@@ -6,10 +6,10 @@
  */
 
 import React, { useState } from 'react';
-import { useDraft } from '../model/page';
+import { saveDraft, useDraft } from '../model/page';
 import { makeStyles } from '@material-ui/core/styles';
 import { Done, Close } from '@material-ui/icons';
-import { upsertDraft } from '../service/firebase';
+import Button, { ButtonContainer } from './Button';
 
 const useStyles = makeStyles({
   container: {
@@ -26,33 +26,8 @@ const useStyles = makeStyles({
     flexGrow: 1,
     resize: 'none',
     padding: '10px'
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '20px'
-  },
-  button: {
-    borderRadius: '50%',
-    width: '40px',
-    height: '40px',
-    border: '1px solid #ccc',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    margin: '0 10px'
   }
 });
-
-const EditorButton = ({ children, onClick }: { children: React$Node, onClick: () => void }) => {
-  const styles = useStyles();
-  return (
-    <div className={styles.button} onClick={onClick}>
-      {children}
-    </div>
-  );
-};
 
 type Props = {|
   authorUid: string,
@@ -80,17 +55,17 @@ export default ({ authorUid, narrativeId, pageNumber, close }: Props) => {
         onChange={e => setText(e.target.value)}
         value={text} 
       />
-      <div className={styles.buttons}>
-        <EditorButton onClick={() => {
-          upsertDraft(draft && draft.id, authorUid, narrativeId, pageNumber, text);
+      <ButtonContainer>
+        <Button onClick={() => {
+          saveDraft(draft && draft.id, authorUid, narrativeId, pageNumber, text);
           close();
         }}>
           <Done />
-        </EditorButton>
-        <EditorButton onClick={() => close()}>
+        </Button>
+        <Button onClick={() => close()}>
           <Close />
-        </EditorButton>
-      </div>
+        </Button>
+      </ButtonContainer>
     </div>
   );
 };

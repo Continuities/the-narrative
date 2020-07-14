@@ -37,33 +37,27 @@ export const activeNarrative = () => db
   //$FlowFixMe: This is in Firebase 7
   .where('status', 'in', [ 'DRAFT', 'VOTE' ])
   .limit(1);
-export const canonPages = (narrativeId:string) => db
-  .collection(`narrative/${narrativeId}/pages`)
-  .where('isCanon', '==', true)
-  .orderBy('number', 'asc');
-export const draftPage = (authorUid:string, narrativeId:string, pageNumber:number) => db
-  .collection(`narrative/${narrativeId}/pages`)
-  .where('authorUid', '==', authorUid)
-  .where('number', '==', pageNumber)
-  .where('isCanon', '==', false)
-  .limit(1);
 
-// TODO: This should probably be in model/page.js
-export const upsertDraft = (pageId:?string, authorUid:string, narrativeId:string, pageNumber:number, text:string) => {
-  const page = {
-    authorUid,
-    isCanon: false,
-    number: pageNumber,
-    text
-  };
-  const col = db.collection(`narrative/${narrativeId}/pages`);
-  if (!pageId) {
-    col.add(page);
-  }
-  else {
-    col.doc(pageId).set(page);
-  }
-};
+export const pages = (narrativeId:string) => db.collection(`narrative/${narrativeId}/pages`);
+export const page = (narrativeId:string, pageId:string) => pages(narrativeId).doc(pageId);
+export const canonPages = (narrativeId:string) => 
+  pages(narrativeId)
+    .where('isCanon', '==', true)
+    .orderBy('number', 'asc');
+export const draftPage = (authorUid:string, narrativeId:string, pageNumber:number) => 
+  pages(narrativeId)
+    .where('authorUid', '==', authorUid)
+    .where('number', '==', pageNumber)
+    .where('isCanon', '==', false)
+    .limit(1);
+export const toApprove = (narrativeId:string, pageNumber:number) =>
+  pages(narrativeId)
+    .where('isCanon', '==', false)
+    .where('number', '==', pageNumber)
+    .where('moderation', '==', 'PENDING');
+
+export const moderator = (authorUid:string) => 
+  db.collection('moderators').doc(authorUid);
 
 export const signInOptions = [
   Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -87,9 +81,13 @@ export const dbMultiEmitter = (refs:Array<$npm$firebase$firestore$Query>):() => 
   return asEmitter(firebase);
 }
 
-export const dbEmitter =  (ref:$npm$firebase$firestore$Query):() => Emitter<$npm$firebase$firestore$QuerySnapshot> => {
+export const queryEmitter = (ref:$npm$firebase$firestore$Query):() => Emitter<$npm$firebase$firestore$QuerySnapshot> => {
   return asEmitter(emit => ref.onSnapshot(emit));
 };
+
+export const docEmitter = (ref:$npm$firebase$firestore$DocumentReference):() => Emitter<$npm$firebase$firestore$DocumentSnapshot> => {
+  return asEmitter(emit => ref.onSnapshot(emit));
+}
 
 export const firebaseAuth = () => firebase.auth();
 export const logout = () => firebase.auth().signOut();
