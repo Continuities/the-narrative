@@ -9,6 +9,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { usePages } from '../model/page';
 import PageEditor from './PageEditor';
+import VoteList from './VoteList';
 
 import type { Page } from '../model/page';
 import type { Narrative } from '../model/narrative';
@@ -60,7 +61,15 @@ const Prompt = ({ narrative }: { narrative: Narrative }) => {
       </React.Fragment>
     );
   case 'VOTE': 
-    return 'TODO: Voting';
+    return (
+      <React.Fragment>
+        {/* eslint-disable-next-line react/prop-types */}
+        <div className={styles.pageNumber}>- {narrative.canonLength + 1} -</div>
+        <div className={styles.container}>
+          <VoteList narrative={narrative}/>
+        </div>
+      </React.Fragment>
+    );
   }
   
   return null;

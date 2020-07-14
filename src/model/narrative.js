@@ -5,8 +5,10 @@
  * @flow
  */
 
-import { activeNarrative, queryEmitter } from '../service/firebase';
+import { narrative, activeNarrative, queryEmitter } from '../service/firebase';
 import { map, useEmitter } from '../util/emitter';
+import { getWinningPage, clearVotes } from './vote';
+import { makeCanon } from './page';
 
 export type Narrative = {|
   id: string,
@@ -29,4 +31,27 @@ export const activeNarrativeEmitter = () => {
 
 export const useActiveNarrative = () => {
   return useEmitter(activeNarrativeEmitter());
+};
+
+export const nextStage = (n:Narrative) => {
+  switch (n.status) {
+  case 'DRAFT':
+    return startVote(n);
+  case 'VOTE':
+    return endVote(n);
+  }
+};
+
+export const startVote = (n:Narrative) => {
+  narrative(n.id).update({ status: 'VOTE' });
+};
+
+export const endVote = async (n:Narrative) => {
+  const winnerId = await getWinningPage(n.id);
+  narrative(n.id).update({
+    status: 'DRAFT',
+    canonLength: n.canonLength + 1
+  });
+  makeCanon(n.id, winnerId);
+  clearVotes(n.id);
 };

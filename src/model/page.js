@@ -11,7 +11,8 @@ import {
   queryEmitter,
   pages,
   page,
-  toApprove
+  toApprove,
+  toVote
 } from '../service/firebase';
 import { activeNarrativeEmitter } from './narrative';
 import { join, map, useEmitter } from '../util/emitter';
@@ -91,4 +92,15 @@ export const approveDraft = (narrativeId:string, pageId:string, approved:boolean
   page(narrativeId, pageId).update({
     moderation: approved ? 'APPROVED' : 'REJECTED'
   });
+};
+
+export const useVoteList = (narrativeId:string, pageNumber:number):?Array<Page> => {
+  return useEmitter(map(
+    queryEmitter(toVote(narrativeId, pageNumber)),
+    s => s.docs.map(d => asPage(d))
+  ));
+};
+
+export const makeCanon = (narrativeId:string, pageId:string) => {
+  page(narrativeId, pageId).update({ isCanon: true });
 };

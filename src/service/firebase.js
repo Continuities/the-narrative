@@ -32,6 +32,8 @@ const firebaseConfig = {
 const firebase = Firebase.initializeApp(firebaseConfig);
 const db = Firebase.firestore();
 
+export const narrative = (narrativeId:string) => 
+  db.collection('narrative').doc(narrativeId);
 export const activeNarrative = () => db
   .collection('narrative')
   //$FlowFixMe: This is in Firebase 7
@@ -55,9 +57,18 @@ export const toApprove = (narrativeId:string, pageNumber:number) =>
     .where('isCanon', '==', false)
     .where('number', '==', pageNumber)
     .where('moderation', '==', 'PENDING');
+export const toVote = (narrativeId:string, pageNumber:number) => 
+  pages(narrativeId)
+    .where('number', '==', pageNumber)
+    // TODO: Support unmoderated setups?
+    .where('moderation', '==', 'APPROVED')
+    .where('isCanon', '==', false);
 
 export const moderator = (authorUid:string) => 
   db.collection('moderators').doc(authorUid);
+
+export const votes = (narrativeId:string) => 
+  db.collection(`narrative/${narrativeId}/votes`);
 
 export const signInOptions = [
   Firebase.auth.GoogleAuthProvider.PROVIDER_ID,

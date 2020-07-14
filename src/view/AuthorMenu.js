@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { logout } from '../service/firebase';
+import { nextStage, useActiveNarrative } from '../model/narrative';
 import { useIsModerator } from '../model/user';
 import Login from './Login';
 import Modal from './Modal';
@@ -47,6 +48,7 @@ const AuthorIcon = ({ auth }: { auth: $npm$firebase$auth$User }) => {
 
 export default () => {
   const authData = useIsModerator();
+  const narrative = useActiveNarrative();
   const [ showing, setShowing ] = useState(null);
   const styles = useStyles();
 
@@ -58,6 +60,14 @@ export default () => {
   const menu = (
     <Menu>
       { isMod && <div key='mod' onClick={() => setShowing('mod')}>Moderate</div> }
+      { isMod && narrative && narrative.status !== 'COMPLETE' && (
+        <div key='next' onClick={() => {
+          nextStage(narrative);
+          setShowing(null);
+        }}>
+          { narrative.status === 'DRAFT' ? 'Start voting' : 'End voting' }
+        </div>
+      ) }
       <div key='logout' onClick={() => { logout().then(close); }}>Logout</div>
     </Menu>
   );
