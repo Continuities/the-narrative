@@ -11,10 +11,11 @@ service cloud.firestore {
     	allow read;
       allow write: if isModerator();
       match /votes/{uid} {
-      	allow read allow write: if request.auth != null && request.auth.uid == uid;
+      	allow read allow write: if (request.auth != null && request.auth.uid == uid) || isModerator();
       }
     	match /pages/{page} {
       	allow read;
+        allow delete: if isModerator();
       	allow create: 
         	if request.auth != null 
         		&& request.auth.uid == request.resource.data.authorUid
@@ -23,13 +24,15 @@ service cloud.firestore {
             && request.resource.data.moderation == 'PENDING'
             && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
         allow update: 
-        	if request.auth != null 
-          	&& (request.auth.uid == resource.data.authorUid || isModerator())
-            && resource.data.isCanon == false 
-            && request.resource.data.isCanon == false
-            && request.resource.data.text != null
-            && (request.resource.data.moderation == 'PENDING' || isModerator())
-            && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1;
+        	if isModerator() || 
+          	(request.auth != null 
+              && request.auth.uid == resource.data.authorUid
+              && resource.data.isCanon == false
+              && request.resource.data.isCanon == false
+              && request.resource.data.text != null
+              && request.resource.data.moderation == 'PENDING'
+              && request.resource.data.number == get(/databases/$(database)/documents/narrative/$(narrative)).data.canonLength + 1
+            );
       }
     }
   }

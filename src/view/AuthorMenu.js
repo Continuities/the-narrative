@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { logout } from '../service/firebase';
-import { nextStage, useActiveNarrative } from '../model/narrative';
+import { nextStage, useActiveNarrative, reset } from '../model/narrative';
 import { useIsModerator } from '../model/user';
 import Login from './Login';
 import Modal from './Modal';
@@ -68,6 +68,14 @@ export default () => {
           { narrative.status === 'DRAFT' ? 'Start voting' : 'End voting' }
         </div>
       ) }
+      { isMod && narrative && (
+        <div key='reset' onClick={() => {
+          reset(narrative);
+          setShowing(null);
+        }}>
+          Reset narrative
+        </div>
+      )}
       <div key='logout' onClick={() => { logout().then(close); }}>Logout</div>
     </Menu>
   );

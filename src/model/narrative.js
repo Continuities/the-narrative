@@ -5,7 +5,7 @@
  * @flow
  */
 
-import { narrative, activeNarrative, queryEmitter } from '../service/firebase';
+import { narrative, activeNarrative, queryEmitter, pages } from '../service/firebase';
 import { map, useEmitter } from '../util/emitter';
 import { getWinningPage, clearVotes } from './vote';
 import { makeCanon } from './page';
@@ -53,5 +53,14 @@ export const endVote = async (n:Narrative) => {
     canonLength: n.canonLength + 1
   });
   makeCanon(n.id, winnerId);
+  clearVotes(n.id);
+};
+
+export const reset = async (n:Narrative) => {
+  narrative(n.id).update({
+    status: 'DRAFT',
+    canonLength: 0
+  });
+  (await pages(n.id).get()).forEach(p => { p.ref.delete(); });
   clearVotes(n.id);
 };

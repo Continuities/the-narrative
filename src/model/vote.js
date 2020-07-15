@@ -20,7 +20,7 @@ export const useVote = (narrativeId:string) =>
   useEmitter(join<$npm$firebase$auth$User, ?Vote>(authEmitter(), auth => 
     map(
       docEmitter(votes(narrativeId).doc(auth.uid)), 
-      doc => doc == null ? null : { pageId: doc.data().pageId }
+      doc => !doc.exists ? null : { pageId: doc.data().pageId }
     )()
   ));
 

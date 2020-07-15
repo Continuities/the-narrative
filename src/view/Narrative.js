@@ -80,16 +80,7 @@ type Props = {|
 |};
 
 export default ({ narrative }: Props) => {
-  const styles = useStyles();
   const pages:Array<Page> = usePages(narrative.id) || [];
-  if (!pages.length) {
-    return (
-      <div className={styles.page}>
-        The page is blank.
-      </div>
-    );
-  }
-
   return (
     <React.Fragment>
       { pages.map(page => <PageView page={page} key={page.number} />) }

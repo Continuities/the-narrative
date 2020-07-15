@@ -5,8 +5,10 @@
  * @flow
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
+import Modal from './Modal';
+import Login from './Login';
 import { makeStyles } from '@material-ui/core/styles';
 import { useVoteList } from '../model/page';
 import { useVote, voteFor } from '../model/vote';
@@ -54,6 +56,10 @@ const useStyles = makeStyles({
   },
   word: {
     margin: '0 5px'
+  },
+  heading: {
+    fontSize: '22px',
+    marginBottom: '20px'
   }
 });
 
@@ -92,21 +98,38 @@ type Props = {|
 export default ({ narrative }: Props) => {
   const styles = useStyles();
 
+  const [ showLogin, setShowLogin ] = useState(false);
   const voteList = useVoteList(narrative.id, narrative.canonLength + 1) || [];
   const voteData = useVote(narrative.id);
   const authorId = voteData && voteData.left.uid;
   const voteId = voteData && voteData.right && voteData.right.pageId;
 
+  const castVote = pageId => {
+    if (!authorId) {
+      setShowLogin(true);
+      return;
+    }
+    authorId && voteFor(authorId, narrative.id, pageId);
+  }
+
   return (
-    <ul className={styles.list}>
-      { voteList.map(page => 
-        <VoteOption 
-          key={page.id} 
-          page={page} 
-          votedFor={voteId === page.id}
-          onClick={() => authorId && voteFor(authorId, narrative.id, page.id)}
-        />
+    <React.Fragment>
+      { showLogin && (
+        <Modal close={() => setShowLogin(false)}>
+          <div className={styles.heading}>You must be signed in to guide the narrative</div>
+          <Login onSignin={() => setShowLogin(false)} />
+        </Modal>
       )}
-    </ul>
+      <ul className={styles.list}>
+        { voteList.map(page => 
+          <VoteOption 
+            key={page.id} 
+            page={page} 
+            votedFor={voteId === page.id}
+            onClick={castVote.bind(null, page.id)}
+          />
+        )}
+      </ul>
+    </React.Fragment>
   );
 };
