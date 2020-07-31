@@ -10,10 +10,12 @@ import { saveDraft, useDraft } from '../model/page';
 import { makeStyles } from '@material-ui/core/styles';
 import { Done, Close } from '@material-ui/icons';
 import Button, { ButtonContainer } from './Button';
+import { initNotifications } from '../service/firebase';
 
 const useStyles = makeStyles({
   container: {
     width: 'calc(100vw - 80px)',
+    maxWidth: 'calc(90vw - 40px)',
     height: 'calc(100vh - 80px)',
     display: 'flex',
     flexDirection: 'column'
@@ -57,6 +59,10 @@ export default ({ authorUid, narrativeId, pageNumber, close }: Props) => {
       />
       <ButtonContainer>
         <Button onClick={() => {
+          if (!text) {
+            return;
+          }
+          initNotifications();
           saveDraft(draft && draft.id, authorUid, narrativeId, pageNumber, text);
           close();
         }}>

@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 import Login from './Login';
 import EditorForm from './EditorForm';
+import FadeIn from './FadeIn';
 import { makeStyles } from '@material-ui/core/styles';
 import { Create } from '@material-ui/icons';
 import { useEmitter } from '../util/emitter';
@@ -49,8 +50,8 @@ export default ({ narrativeId, pageNumber }: Props) => {
       >
         <Create fontSize='large' />
       </div>
-      {open && (
-        <Modal close={() => setOpen(false)}>
+      <FadeIn in={open}>
+        <Modal noButton close={() => setOpen(false)}>
           { auth ? (
             <EditorForm 
               narrativeId={narrativeId}
@@ -65,7 +66,7 @@ export default ({ narrativeId, pageNumber }: Props) => {
             </React.Fragment>
           )}
         </Modal>
-      )}
+      </FadeIn>
     </React.Fragment>
   );
 };

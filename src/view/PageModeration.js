@@ -9,12 +9,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useToApprove, approveDraft } from '../model/page';
 import Button, { ButtonContainer } from './Button';
-import { ThumbUp, ThumbDown, Close } from '@material-ui/icons';
+import { ThumbUp, ThumbDown } from '@material-ui/icons';
 
 const useStyles = makeStyles({
   container: {
     width: 'calc(100vw - 80px)',
-    height: 'calc(100vh - 80px)',
+    maxWidth: 'calc(90vw - 40px)',
+    height: 'calc(100vh - 120px)',
     display: 'flex',
     flexDirection: 'column'
   },
@@ -25,11 +26,7 @@ const useStyles = makeStyles({
   }
 })
 
-type Props = {|
-  close: () => void
-|};
-
-export default ({ close }: Props) => {
+export default () => {
   const styles = useStyles();
   const approveData = useToApprove();
   if (!approveData) {
@@ -57,9 +54,6 @@ export default ({ close }: Props) => {
             </Button>
           </React.Fragment>
         )}
-        <Button onClick={close}>
-          <Close />
-        </Button>
       </ButtonContainer>
     </div>
   );

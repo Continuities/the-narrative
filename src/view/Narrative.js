@@ -54,6 +54,7 @@ const Prompt = ({ narrative }: { narrative: Narrative }) => {
       <React.Fragment>
         {/* eslint-disable-next-line react/prop-types */}
         <div className={styles.pageNumber}>- {narrative.canonLength + 1} -</div>
+        <div className={styles.pageNumber}>Contribute:</div>
         <div className={styles.container}>
           {/* eslint-disable-next-line react/prop-types */}
           <PageEditor narrativeId={narrative.id} pageNumber={narrative.canonLength + 1} />
@@ -65,6 +66,7 @@ const Prompt = ({ narrative }: { narrative: Narrative }) => {
       <React.Fragment>
         {/* eslint-disable-next-line react/prop-types */}
         <div className={styles.pageNumber}>- {narrative.canonLength + 1} -</div>
+        <div className={styles.pageNumber}>Vote:</div>
         <div className={styles.container}>
           <VoteList narrative={narrative}/>
         </div>

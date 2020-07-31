@@ -18,7 +18,8 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
-    margin: '0 10px'
+    margin: '0 10px',
+    '-webkit-tap-highlight-color': 'transparent'
   },
   container: {
     display: 'flex',
@@ -41,7 +42,7 @@ export default ({ children, onClick }: Props) => {
   );
 };
 
-export const ButtonContainer = ({ children }: { children: React$Node }) => {
+export const ButtonContainer = ({ children }: { children: ?React$Node }) => {
   const styles = useStyles();
   return (
     <div className={styles.container}>

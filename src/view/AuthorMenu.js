@@ -15,6 +15,7 @@ import Modal from './Modal';
 import Menu from './Menu';
 import PageModeration from './PageModeration';
 import { AccountCircle } from '@material-ui/icons';
+import FadeIn from './FadeIn';
 
 const useStyles = makeStyles({
   button: {
@@ -85,19 +86,19 @@ export default () => {
       onClick={() => setShowing('menu')}
       className={styles.button}
     >
-      { (showing == 'menu') && (
+      <FadeIn in={showing == 'menu'}>
         <Modal close={close}>
           { auth 
             ? menu
             : <Login onSignin={close} />
           }
         </Modal>
-      )}
-      { (showing == 'mod') && (
+      </FadeIn>
+      <FadeIn in={showing == 'mod'}>
         <Modal close={close}>
-          <PageModeration close={close}/>
+          <PageModeration />
         </Modal>
-      )}
+      </FadeIn>
       { auth 
         ? <AuthorIcon auth={auth} />
         : <AccountCircle className={styles.icon}/>

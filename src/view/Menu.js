@@ -15,10 +15,16 @@ const useStyles = makeStyles({
     listStyle: 'none'
   },
   item: {
-    marginTop: '10px',
+    margin: '10px 0 0',
+    paddingTop: '10px',
+    borderTop: '1px solid #ccc',
+    fontSize: '24px',
     cursor: 'pointer',
+    textAlign: 'center',
     '&:first-child': {
-      marginTop: 0
+      marginTop: 0,
+      borderTop: 'none',
+      paddingTop: 0
     }
   }
 });

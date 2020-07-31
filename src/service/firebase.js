@@ -8,6 +8,7 @@
 import Firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/messaging';
 import Config from '../config';
 import { asEmitter } from '../util/emitter';
 
@@ -31,6 +32,25 @@ const firebaseConfig = {
 
 const firebase = Firebase.initializeApp(firebaseConfig);
 const db = Firebase.firestore();
+const messaging = Firebase.messaging();
+
+//$FlowFixMe: This is in Firebase 7
+messaging.usePublicVapidKey(Config.FIREBASE_VAPID_KEY);
+navigator.serviceWorker && navigator.serviceWorker.register('./static/firebase-message-sw.js').then(reg => {
+  messaging.useServiceWorker(reg);
+});
+
+export const initNotifications = () => {
+  messaging.getToken().then((currentToken) => {
+    if (currentToken) {
+      console.info('Got FCM token', currentToken);
+    } else {
+      console.info('No FCM token available. Request permission to generate one.');
+    }
+  }).catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
+  });
+};
 
 export const narrative = (narrativeId:string) => 
   db.collection('narrative').doc(narrativeId);

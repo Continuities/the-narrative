@@ -12,6 +12,7 @@ import Login from './Login';
 import { makeStyles } from '@material-ui/core/styles';
 import { useVoteList } from '../model/page';
 import { useVote, voteFor } from '../model/vote';
+import { initNotifications } from '../service/firebase';
 
 import type { Page } from '../model/page';
 import type { Narrative } from '../model/narrative';
@@ -27,9 +28,14 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     fontSize: '22px',
     border: '1px solid #ccc',
+    'transition': 'border-color 200ms, box-shadow 200ms',
     display: 'flex',
     marginBottom: '10px',
     flexDirection: 'column',
+    borderRadius: '30px',
+    overflow: 'hidden',
+    boxShadow: '5px 5px 5px 0px #ccc',
+    '-webkit-tap-highlight-color': 'transparent',
     '@media(min-width:640px)': {
       '&': {
         flexDirection: 'row', 
@@ -37,13 +43,20 @@ const useStyles = makeStyles({
     }
   },
   votedFor: {
-    borderColor: 'red'
+    borderColor: '#3D9970',
+    boxShadow: 'none'
   },
   count: {
     padding: '10px',
     background: '#111',
     color: 'white',
-    textAlign: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    'transition': 'background 200ms',
+    '$votedFor &': {
+      background: '#3D9970'
+    },
     '@media(min-width:640px)': {
       '&': {
         width: '150px', 
@@ -51,11 +64,15 @@ const useStyles = makeStyles({
     }
   },
   words: {
-    padding: '10px',
+    padding: '5px 10px',
     display: 'flex',
+    flexWrap: 'wrap'
   },
   word: {
-    margin: '0 5px'
+    margin: '5px',
+    padding: '5px 10px',
+    background: '#ccc',
+    borderRadius: '20px'
   },
   heading: {
     fontSize: '22px',
@@ -109,6 +126,7 @@ export default ({ narrative }: Props) => {
       setShowLogin(true);
       return;
     }
+    initNotifications();
     authorId && voteFor(authorId, narrative.id, pageId);
   }
 

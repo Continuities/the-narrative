@@ -8,7 +8,8 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.cjs --mode development --devtool inline-source-map --hot $EXTRA_WEBPACK_DEV_SERVER_ARGS",
-    "build": "webpack --config webpack.config.cjs --mode=production"
+    "build": "webpack --config webpack.config.cjs --mode=production",
+    "deploy": "firebase deploy"
   },
   "browserslist": "> 5%, not dead",
   "devDependencies": {
@@ -20,6 +21,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-imports": "^2.0.0",
+    "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^3.6.0",
     "eslint": "^7.4.0",
     "eslint-loader": "^4.0.2",
@@ -40,6 +42,7 @@
     "firebase": "^7.16.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-firebaseui": "^4.1.0"
+    "react-firebaseui": "^4.1.0",
+    "react-transition-group": "^4.4.1"
   }
 }

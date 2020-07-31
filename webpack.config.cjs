@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const FlowWebpackPlugin = require('flow-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: "./src/index.js",
@@ -36,6 +37,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "static", "index.html"),
       filename: 'index.html'
+    }),
+    new CopyPlugin({
+      patterns: [{ 
+        from: 'static/firebase-message-sw.js',
+        to: 'static'
+      }]
     })
   ]
 };

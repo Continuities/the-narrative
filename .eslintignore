@@ -2,3 +2,4 @@ src/index.js
 babel.config.cjs
 webpack.config.cjs
 **/dist/*
+**/static/*
