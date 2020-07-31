@@ -42,6 +42,9 @@ module.exports = {
       patterns: [{ 
         from: 'static/firebase-message-sw.js',
         to: 'static'
+      }, { 
+        from: 'static/manifest.webmanifest',
+        to: 'static'
       }]
     })
   ]

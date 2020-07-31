@@ -14,12 +14,12 @@ const buildNotification = data => {
   switch (data.status) {
   case 'DRAFT':
     return {
-      title: 'Voting has ended',
+      title: 'The Narrative',
       body: `Read page ${data.canonLength} now!`
     };
   case 'VOTE':
     return {
-      title: 'Voting is open',
+      title: 'The Narrative',
       body: `Time to vote on page ${data.canonLength + 1}!`
     };
   }
